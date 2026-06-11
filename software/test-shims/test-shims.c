@@ -27,9 +27,9 @@ void clear_shim_waveforms( volatile uint32_t *shim)
 {
   for (int k=0; k<65536; k++) {
     shim[k] = 0x0;
-  }        
+  }
 }
- 
+
 // Handle SIGINT
 void sigint_handler(int s){
   fprintf(stderr, "Caught SIGINT signal %d! Shutting down waveform trigger\n", s);
@@ -43,7 +43,7 @@ void sigint_handler(int s){
 
   volatile uint32_t *cfg = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x40200000);
   volatile uint32_t *n_shutdown_force = ((uint32_t *)(cfg));
-  
+
   fprintf(stderr, "Setting shutdown force...\n");
   *n_shutdown_force = 0x0;
   fprintf(stderr, "Disabling DAC...\n");
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     *dac_control_register, *dac_trigger_count, *dac_refresh_divider, \
     *shim_memory, \
     *trigger_ctrl, *tc_trigger_count, *trigger_lockout_ptr, *trigger_polarity, *trigger_enable;
-  
+
   if (!(argc == 6) && !(argc == 7)) {
     fprintf(stderr, "Usage: %s <trigger lockout (ms)> <fclk_divider_0> <fclk_divider_1> <inputfile> <dac_refresh_divider> [board_to_log]\n", argv[0]);
     exit(-1);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
   int **waveform_buf = NULL;
 
   linebuffer = (char *) malloc(2048);
-  
+
   FILE *input_file = fopen(filename, "r");
   if(input_file != NULL) {
     do {
@@ -115,21 +115,21 @@ int main(int argc, char *argv[])
       if(linebuffer[0] != '#')
         line_counter++;
     } while(1);
-    
+
     fprintf(stdout, "%d waveform samples found !\n", line_counter);
     // Check if we have enough memory
     if(line_counter * 32 > 65536) {
       fprintf(stderr, "Not enough block RAM in this FPGA for your file with this software ! Try staying below %d samples.\n", 65536/32);
       exit(-1);
     }
-    
+
     // Allocate memory -- 32 channels
     waveform_buf = (int **) malloc(32*sizeof(int *));
     if(waveform_buf == NULL) {
       fprintf(stderr, "Error allocating waveform memory !\n");
       exit(-1);
     }
-    
+
     for (int k=0; k<32; k++) {
       waveform_buf[k] = (int *) malloc(line_counter*sizeof(int));
       if(waveform_buf[k] == NULL) {
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
         exit(-1);
       }
     }
-    
+
     fprintf(stdout, ":"); fflush(stdout);
     rewind(input_file);
     unsigned int line_read_counter = 0;
@@ -167,9 +167,9 @@ int main(int argc, char *argv[])
       line_read_counter++;
     } while(1);
     fprintf(stdout, ":"); fflush(stdout);
-    
+
     fprintf(stdout, "\n");
-    
+
     fclose(input_file);
   } else {
     fprintf(stderr, "Cannot open input file %s for reading !\n", filename);
@@ -187,14 +187,14 @@ int main(int argc, char *argv[])
   sigIntHandler.sa_handler = sigint_handler;
   sigemptyset(&sigIntHandler.sa_mask);
   sigIntHandler.sa_flags = 0;
-  
+
   sigaction(SIGINT, &sigIntHandler, NULL);
 
   usleep(250000);
 
 
   //// Map the memory
-  
+
   fprintf(stdout, "Opening /dev/mem...\n"); fflush(stdout);
   if((fd = open("/dev/mem", O_RDWR)) < 0) {
     perror("open");
@@ -212,16 +212,16 @@ int main(int argc, char *argv[])
     be of type uint32_t. The HDL would have to be changed to an 8-bit interface to support per
     byte transactions
   */
-  
+
   // shim_memory is now a full 256k
   printf("Mapping shim memory...\n"); fflush(stdout);
 
   shim_memory = mmap(NULL, 64*sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x40000000);
-  
+
   printf("Clearing shim memory...\n"); fflush(stdout);
 
   clear_shim_waveforms(shim_memory);
-    
+
   printf("Setting FPGA clock divisors...\n"); fflush(stdout);
   printf("Div0 = %d, Div1 = %d\n", fclk0_div0, fclk0_div1);
   printf("Base frequency = %f MHz\n", FCLK0_BASELINE_FREQ / 1e6);
@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
   dac_control_register  = ((uint32_t *)(dac_ctrl+2));
   dac_enable = ((uint32_t *)(dac_ctrl+3));
   dac_refresh_divider = ((uint32_t *)(dac_ctrl+4));
-  
+
   dac_version = ((uint32_t *)(dac_ctrl+10));
   dac_trigger_count = ((uint32_t *)(dac_ctrl+9));
   tc_trigger_count = ((uint32_t *)(trigger_ctrl+4));
@@ -257,11 +257,11 @@ int main(int argc, char *argv[])
   *trigger_lockout_ptr = (uint32_t)(floor(atof(argv[1]) * 1e-3 * FCLK0_BASELINE_FREQ / (fclk0_div0 * fclk0_div1)));
 
   usleep(250000);
-  
+
   printf("Trigger lockout = %d FPGA clockcycles\n", *trigger_lockout_ptr);
   *trigger_polarity = 1;
   *trigger_enable = 1;
-  
+
   printf("FPGA version = %08lX\n", *dac_version);
 
   if(*dac_version != 0xffff0005) {
@@ -334,7 +334,7 @@ int main(int argc, char *argv[])
       }
     }
   }
-  
+
   // set the DAC to external SPI clock, not fully working, so set it to 0x0 (enable is 0x1)
   *dac_control_register = 0x0;
 
@@ -353,7 +353,7 @@ int main(int argc, char *argv[])
     printf(".... trigger count = %d (tc = %d)!\n", *dac_trigger_count, *tc_trigger_count); fflush(stdout);
     sleep(3);
   }
-  
+
   sleep(1);
   *n_shutdown_force = 0x0;
   *dac_enable = 0x0;

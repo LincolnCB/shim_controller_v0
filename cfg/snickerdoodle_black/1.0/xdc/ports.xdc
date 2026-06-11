@@ -15,7 +15,7 @@ set_property PULLTYPE PULLDOWN [get_ports trigger_i]
 set_property PACKAGE_PIN P19 [get_ports trigger_i]
 
 # SPI CS out, differential
-# Pins: 
+# Pins:
 #   ~DAC_CS+O JB2.5 N17
 #   ~DAC_CS-O JB2.7 P18
 set_property IOSTANDARD LVDS_25 [get_ports cs_o_p]

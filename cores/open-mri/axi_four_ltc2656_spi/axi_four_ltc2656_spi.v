@@ -692,7 +692,7 @@ module axi_four_ltc2656_spi #
       endcase
     end // else: !if(~aresetn)
   end // always @ (posedge aclk)
-  
+
   // this block deals with the memory addressing alone
   always @(posedge aclk)
   begin

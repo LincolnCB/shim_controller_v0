@@ -51,7 +51,8 @@ module axi_bram_writer #
 
   localparam integer ADDR_LSB = clogb2(AXI_DATA_WIDTH/8 - 1);
 
-  reg int_bvalid_reg, int_bvalid_next;
+  reg  int_bvalid_reg;
+  wire int_bvalid_next;
   wire int_wvalid_wire;
 
   assign int_wvalid_wire = s_axi_awvalid & s_axi_wvalid;
@@ -68,20 +69,9 @@ module axi_bram_writer #
     end
   end
 
-  always @*
-  begin
-    int_bvalid_next = int_bvalid_reg;
-
-    if(int_wvalid_wire)
-    begin
-      int_bvalid_next = 1'b1;
-    end
-
-    if(s_axi_bready & int_bvalid_reg)
-    begin
-      int_bvalid_next = 1'b0;
-    end
-  end
+  assign int_bvalid_next =  (s_axi_bready & int_bvalid_reg) ? 1'b0
+                            : (int_wvalid_wire) ? 1'b1
+                            : int_bvalid_reg;
 
   assign s_axi_bresp = 2'd0;
 

@@ -1,15 +1,15 @@
 @@ -15,7 +15,7 @@
  #
- # sudo 
+ # sudo
  #
 -# CONFIG_sudo is not set
 +CONFIG_sudo=y
  # CONFIG_sudo-dbg is not set
  # CONFIG_sudo-dev is not set
- 
+
 @@ -194,7 +194,7 @@
  #
- # kmod 
+ # kmod
  #
 -# CONFIG_kmod is not set
 +CONFIG_kmod=y
@@ -18,40 +18,40 @@
  # CONFIG_kmod-dev is not set
 @@ -490,7 +490,7 @@
  #
- # lrzsz 
+ # lrzsz
  #
 -# CONFIG_lrzsz is not set
 +CONFIG_lrzsz=y
  # CONFIG_lrzsz-dbg is not set
  # CONFIG_lrzsz-dev is not set
- 
+
 @@ -3676,7 +3676,6 @@
  # CONFIG_matchbox-theme-sato is not set
  # CONFIG_matchbox-theme-sato-dev is not set
  # CONFIG_matchbox-theme-sato-dbg is not set
 -
  #
- # linuxptp 
+ # linuxptp
 @@ -490,7 +490,7 @@
  #
- # lrzsz 
+ # lrzsz
  #
 -# CONFIG_lrzsz is not set
 +CONFIG_lrzsz=y
  # CONFIG_lrzsz-dbg is not set
  # CONFIG_lrzsz-dev is not set
- 
+
 @@ -3705,7 +3705,7 @@
  #
 @@ -3695,6 +3694,9 @@
  # Petalinux Package Groups
  #
- 
+
 +CONFIG_packagegroup-petalinux=y
 +CONFIG_packagegroup-petalinux-utils=y
 +
  #
- # packagegroup-xilinx-audio 
+ # packagegroup-xilinx-audio
  #
 @@ -3775,7 +3777,10 @@
  #
